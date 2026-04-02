@@ -30,39 +30,6 @@ It is built using Flask, NLP, and Deep Learning. It allows students to ask quest
 ---
 
 ## 📂 Project Structure
-# 🎓 EduBot – AI Interactive Tutor
-
-EduBot is an AI-powered interactive learning assistant built using Flask, NLP, and Deep Learning. It allows students to ask questions via text or voice and receive intelligent responses with audio and avatar-based video output.
-
----
-
-## 🚀 Features
-
-- 🔐 User Authentication (Login/Register)
-- 💬 AI Chatbot using NLP
-- 🎤 Voice Input & Speech Output (TTS)
-- 🎥 AI Avatar Video Response
-- 📄 Export Chat as PDF
-- 🧠 Deep Learning Model (TensorFlow/Keras)
-- 📚 Multi-subject support (Maths, Science, etc.)
-
----
-
-## 🏗️ Tech Stack
-
-- **Frontend:** HTML, CSS, JavaScript
-- **Backend:** Flask (Python)
-- **Database:** SQLite
-- **AI Model:** TensorFlow / Keras
-- **NLP:** NLTK
-- **Voice:** gTTS
-- **Video:** MoviePy
-- **PDF Export:** ReportLab
-
----
-
-## 📂 Project Structure
-
 
 AI-Tutor/
 │
