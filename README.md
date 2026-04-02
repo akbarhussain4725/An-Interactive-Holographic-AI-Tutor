@@ -43,6 +43,6 @@ EduBot is an AI-powered interactive tutor that:
 ## ▶️ Installation
 
 ```bash
-git clone https://github.com/your-username/ai-tutor.git
+git clone https://github.com/akbarhussain4725/An-Interactive-Holographic-AI-Tutor
 cd ai-tutor
 pip install -r requirements.txt
