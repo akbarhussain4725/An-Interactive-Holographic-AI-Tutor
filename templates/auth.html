@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% if mode == 'register' %}Create Account{% else %}Sign In{% endif %} — EduBot</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--ink:#0f0e17;--ink-soft:#3d3d4e;--ink-muted:#7c7c94;
+--cream:#fefcf8;--paper:#f5f0e8;--card:#ffffff;
+--gold:#c9a84c;--gold-light:#f0d98a;--blue:#2563eb;--blue-soft:#eff6ff;
+--green:#059669;--rose:#e11d48;--red:#dc2626;
+--shadow:0 4px 24px rgba(15,14,23,.08);--shadow-lg:0 16px 48px rgba(15,14,23,.12);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
+
+.auth-visual{position:relative;overflow:hidden;background:var(--ink)}
+.auth-visual img{width:100%;height:100%;object-fit:cover;opacity:.5}
+.auth-visual-overlay{position:absolute;inset:0;background:linear-gradient(160deg,rgba(15,14,23,.7) 0%,rgba(37,99,235,.3) 100%)}
+.auth-visual-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:40px;z-index:1}
+.auth-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.auth-logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),#a07830);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.auth-logo-text{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff}
+.auth-logo-text span{color:var(--gold-light)}
+.visual-quote{color:#fff}
+.visual-quote blockquote{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;line-height:1.35;margin-bottom:16px}
+.visual-quote blockquote span{color:var(--gold-light);font-style:italic}
+.visual-quote p{font-size:14px;color:rgba(255,255,255,.6);font-weight:300}
+.visual-features{display:flex;flex-direction:column;gap:12px}
+.visual-feature{display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.8);font-size:14px}
+.visual-feature::before{content:'✓';width:24px;height:24px;background:rgba(201,168,76,.25);border:1px solid rgba(201,168,76,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold-light);flex-shrink:0;text-align:center;line-height:24px}
+
+.auth-form-panel{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px 48px;overflow-y:auto;min-height:100vh}
+.auth-form-wrap{width:100%;max-width:420px}
+.auth-form-header{margin-bottom:36px}
+.auth-mode-tabs{display:flex;background:var(--paper);border-radius:12px;padding:4px;margin-bottom:32px}
+.mode-tab{flex:1;padding:10px;text-align:center;font-size:14px;font-weight:600;border-radius:8px;cursor:pointer;text-decoration:none;color:var(--ink-muted);transition:all .2s}
+.mode-tab.active{background:var(--card);color:var(--ink);box-shadow:0 2px 8px rgba(15,14,23,.1)}
+.auth-title{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.auth-sub{font-size:14px;color:var(--ink-muted)}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;letter-spacing:.3px;text-transform:uppercase}
+.form-input{width:100%;padding:12px 16px;border:1.5px solid rgba(15,14,23,.12);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--card);transition:all .2s;outline:none}
+.form-input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.1)}
+.form-input::placeholder{color:var(--ink-muted)}
+.form-input.error{border-color:var(--red)}
+.form-select{width:100%;padding:12px 16px;border:1.5px solid rgba(15,14,23,.12);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--card);transition:all .2s;outline:none;appearance:none;cursor:pointer}
+.form-select:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.1)}
+.input-wrap{position:relative}
+.input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none}
+.input-wrap .form-input{padding-left:42px}
+.toggle-password{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ink-muted);font-size:16px}
+.form-hint{font-size:12px;color:var(--ink-muted);margin-top:6px}
+
+.strength-bar{height:4px;border-radius:100px;background:rgba(15,14,23,.08);margin-top:8px;overflow:hidden}
+.strength-fill{height:100%;border-radius:100px;transition:all .3s;width:0%}
+.strength-fill.weak{background:var(--red);width:33%}
+.strength-fill.medium{background:var(--gold);width:66%}
+.strength-fill.strong{background:var(--green);width:100%}
+
+.error-msg{background:#fff1f2;border:1px solid rgba(220,38,38,.2);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--red);margin-bottom:16px;display:none}
+.error-msg.show{display:block}
+
+.btn-submit{width:100%;padding:14px;background:linear-gradient(135deg,var(--blue),#1d4ed8);color:#fff;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-submit:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(37,99,235,.4)}
+.btn-submit:disabled{opacity:.7;cursor:not-allowed;transform:none}
+.btn-submit .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+.btn-submit.loading .spinner{display:block}
+.btn-submit.loading .btn-text{display:none}
+
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--ink-muted);font-size:13px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(15,14,23,.1)}
+
+.auth-switch{text-align:center;font-size:14px;color:var(--ink-muted);margin-top:20px}
+.auth-switch a{color:var(--blue);font-weight:600;text-decoration:none}
+.auth-switch a:hover{text-decoration:underline}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.auth-form-wrap{animation:fadeIn .5s ease}
+
+@media(max-width:768px){
+body{grid-template-columns:1fr}
+.auth-visual{display:none}
+.auth-form-panel{padding:40px 24px}
+}
+</style>
+</head>
+<body>
+
+<div class="auth-visual">
+  <img src="https://images.pexels.com/photos/256395/pexels-photo-256395.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Learning">
+  <div class="auth-visual-overlay"></div>
+  <div class="auth-visual-content">
+    <a href="/" class="auth-logo">
+      <div class="auth-logo-icon">🎓</div>
+      <div class="auth-logo-text">Edu<span>Bot</span></div>
+    </a>
+    <div class="visual-quote">
+      <blockquote>"Learning is not the <span>filling of a bucket</span>, but the lighting of a fire."</blockquote>
+      <p>— W.B. Yeats</p>
+    </div>
+    <div class="visual-features">
+      <div class="visual-feature">Ask doubts in text or voice</div>
+      <div class="visual-feature">AI teacher avatar responds live</div>
+      <div class="visual-feature">50+ topics across 7 subjects</div>
+      <div class="visual-feature">Export chat history as PDF</div>
+      <div class="visual-feature">100% free for all students</div>
+    </div>
+  </div>
+</div>
+
+<div class="auth-form-panel">
+  <div class="auth-form-wrap">
+    <div class="auth-mode-tabs">
+      <a href="/login" class="mode-tab {% if mode == 'login' %}active{% endif %}">Sign In</a>
+      <a href="/register" class="mode-tab {% if mode == 'register' %}active{% endif %}">Register</a>
+    </div>
+
+    <div class="auth-form-header">
+      <h1 class="auth-title">{% if mode == 'register' %}Create Account{% else %}Welcome Back{% endif %}</h1>
+      <p class="auth-sub">{% if mode == 'register' %}Join thousands of students learning smarter.{% else %}Sign in to continue your learning journey.{% endif %}</p>
+    </div>
+
+    <div class="error-msg" id="errorMsg"></div>
+
+    {% if mode == 'register' %}
+    <form id="registerForm" autocomplete="off">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <div class="input-wrap">
+            <span class="input-icon">👤</span>
+            <input type="text" name="full_name" class="form-input" placeholder="Your full name" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <div class="input-wrap">
+            <span class="input-icon">@</span>
+            <input type="text" name="username" class="form-input" placeholder="username" required>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <div class="input-wrap">
+          <span class="input-icon">✉️</span>
+          <input type="email" name="email" class="form-input" placeholder="you@email.com" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Grade / Class</label>
+          <select name="grade" class="form-select">
+            <option value="">Select Grade</option>
+            <option>Grade 6</option><option>Grade 7</option><option>Grade 8</option>
+            <option>Grade 9</option><option>Grade 10</option><option>Grade 11</option>
+            <option>Grade 12</option><option>College</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">School (Optional)</label>
+          <input type="text" name="school" class="form-input" placeholder="School name">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" name="password" class="form-input" id="regPassword" placeholder="Create a strong password" required>
+          <button type="button" class="toggle-password" onclick="togglePwd('regPassword',this)">👁️</button>
+        </div>
+        <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+        <p class="form-hint" id="strengthText">Enter a password</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" name="confirm_password" class="form-input" id="confirmPwd" placeholder="Repeat your password" required>
+          <button type="button" class="toggle-password" onclick="togglePwd('confirmPwd',this)">👁️</button>
+        </div>
+      </div>
+      <button type="submit" class="btn-submit" id="registerBtn">
+        <div class="spinner"></div>
+        <span class="btn-text">🚀 Create My Account</span>
+      </button>
+    </form>
+    {% else %}
+    <form id="loginForm" autocomplete="off">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input type="text" name="username" class="form-input" placeholder="Your username" required autofocus>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" name="password" class="form-input" id="loginPassword" placeholder="Your password" required>
+          <button type="button" class="toggle-password" onclick="togglePwd('loginPassword',this)">👁️</button>
+        </div>
+      </div>
+      <button type="submit" class="btn-submit" id="loginBtn">
+        <div class="spinner"></div>
+        <span class="btn-text">Sign In →</span>
+      </button>
+    </form>
+    {% endif %}
+
+    <div class="auth-switch">
+      {% if mode == 'register' %}
+        Already have an account? <a href="/login">Sign In</a>
+      {% else %}
+        Don't have an account? <a href="/register">Register Free</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+function togglePwd(id,btn){const el=document.getElementById(id);if(el.type==='password'){el.type='text';btn.textContent='🙈'}else{el.type='password';btn.textContent='👁️'}}
+
+const pwdEl=document.getElementById('regPassword');
+if(pwdEl){
+  pwdEl.addEventListener('input',function(){
+    const v=this.value;const fill=document.getElementById('strengthFill');const txt=document.getElementById('strengthText');
+    if(v.length===0){fill.className='strength-fill';fill.style.width='0';txt.textContent='Enter a password';return}
+    let s=0;if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;
+    if(s<=1){fill.className='strength-fill weak';txt.textContent='Weak password'}
+    else if(s<=2){fill.className='strength-fill medium';txt.textContent='Medium strength'}
+    else{fill.className='strength-fill strong';txt.textContent='Strong password ✓'}
+  });
+}
+
+function showError(msg){const el=document.getElementById('errorMsg');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),5000)}
+
+const regForm=document.getElementById('registerForm');
+if(regForm){
+  regForm.addEventListener('submit',async function(e){
+    e.preventDefault();
+    const fd=new FormData(this);
+    const data={};fd.forEach((v,k)=>data[k]=v);
+    if(data.password!==data.confirm_password){showError('Passwords do not match.');return}
+    if(data.password.length<6){showError('Password must be at least 6 characters.');return}
+    const btn=document.getElementById('registerBtn');
+    btn.classList.add('loading');btn.disabled=true;
+    try{
+      const r=await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+      const res=await r.json();
+      if(res.success){window.location.href=res.redirect}
+      else{showError(res.message);btn.classList.remove('loading');btn.disabled=false}
+    }catch(err){showError('Something went wrong. Please try again.');btn.classList.remove('loading');btn.disabled=false}
+  });
+}
+
+const loginForm=document.getElementById('loginForm');
+if(loginForm){
+  loginForm.addEventListener('submit',async function(e){
+    e.preventDefault();
+    const fd=new FormData(this);const data={};fd.forEach((v,k)=>data[k]=v);
+    const btn=document.getElementById('loginBtn');btn.classList.add('loading');btn.disabled=true;
+    try{
+      const r=await fetch('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+      const res=await r.json();
+      if(res.success){window.location.href=res.redirect}
+      else{showError(res.message);btn.classList.remove('loading');btn.disabled=false}
+    }catch(err){showError('Something went wrong. Please try again.');btn.classList.remove('loading');btn.disabled=false}
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+flask
+flask_sqlalchemy
+flask_login
+werkzeug
+numpy
+nltk
+tensorflow
+keras
+gtts
+moviepy
+reportlab

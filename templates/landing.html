@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduBot — Your AI Study Companion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--ink:#0f0e17;--ink-soft:#3d3d4e;--ink-muted:#7c7c94;
+--cream:#fefcf8;--paper:#f5f0e8;--card:#ffffff;
+--gold:#c9a84c;--gold-light:#f0d98a;--blue:#2563eb;--blue-soft:#eff6ff;
+--green:#059669;--rose:#e11d48;
+--shadow:0 4px 24px rgba(15,14,23,.08);--shadow-lg:0 16px 48px rgba(15,14,23,.12);
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 5%;height:72px;display:flex;align-items:center;justify-content:space-between;background:rgba(254,252,248,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(201,168,76,.15)}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--gold),#a07830);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.nav-logo-text{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink)}
+.nav-logo-text span{color:var(--gold)}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-links a{text-decoration:none;color:var(--ink-soft);font-size:14px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--blue)}
+.nav-cta{display:flex;gap:12px}
+.btn{padding:10px 22px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:8px}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid rgba(15,14,23,.15)}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+.btn-primary{background:linear-gradient(135deg,var(--blue),#1d4ed8);color:#fff;box-shadow:0 4px 16px rgba(37,99,235,.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(37,99,235,.4)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#a07830);color:#fff;box-shadow:0 4px 16px rgba(201,168,76,.3)}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(201,168,76,.4)}
+.btn-lg{padding:15px 36px;font-size:16px;border-radius:12px}
+
+.hero{min-height:100vh;padding:120px 5% 80px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;right:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(201,168,76,.1) 0%,transparent 70%);pointer-events:none}
+.hero::after{content:'';position:absolute;bottom:-100px;left:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,.06) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:var(--blue-soft);border:1px solid rgba(37,99,235,.2);border-radius:100px;font-size:12px;font-weight:600;color:var(--blue);margin-bottom:24px;letter-spacing:.5px;text-transform:uppercase}
+.hero-badge::before{content:'✦';font-size:10px}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(42px,5vw,68px);font-weight:900;line-height:1.05;margin-bottom:20px;color:var(--ink)}
+.hero-title .accent{color:var(--gold);font-style:italic}
+.hero-sub{font-size:18px;color:var(--ink-soft);line-height:1.7;margin-bottom:36px;font-weight:300;max-width:480px}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:48px}
+.hero-stats{display:flex;gap:40px}
+.stat{display:flex;flex-direction:column}
+.stat-num{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--ink)}
+.stat-label{font-size:12px;color:var(--ink-muted);font-weight:500;letter-spacing:.3px}
+.hero-visual{position:relative;display:flex;flex-direction:column;gap:16px}
+.hero-img-wrap{border-radius:20px;overflow:hidden;box-shadow:var(--shadow-lg);position:relative;aspect-ratio:4/3}
+.hero-img-wrap img{width:100%;height:100%;object-fit:cover}
+.hero-img-wrap .overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(15,14,23,.4))}
+.chat-preview{position:absolute;bottom:-24px;left:-32px;background:var(--card);border-radius:16px;padding:16px 20px;box-shadow:var(--shadow-lg);width:280px;border:1px solid rgba(201,168,76,.15)}
+.chat-preview-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.bot-avatar{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),#a07830);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:700}
+.chat-preview-name{font-size:13px;font-weight:600;color:var(--ink)}
+.chat-preview-status{font-size:11px;color:var(--green);display:flex;align-items:center;gap:4px}
+.chat-preview-status::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;display:inline-block}
+.chat-bubble{background:var(--blue-soft);border-radius:12px 12px 12px 2px;padding:10px 14px;font-size:12px;color:var(--ink-soft);line-height:1.5}
+.float-tag{position:absolute;top:-20px;right:-20px;background:var(--card);border-radius:12px;padding:12px 16px;box-shadow:var(--shadow);display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--ink);border:1px solid rgba(201,168,76,.15)}
+.float-tag .emoji{font-size:20px}
+
+.section{padding:100px 5%}
+.section-dark{background:var(--paper)}
+.section-header{text-align:center;max-width:680px;margin:0 auto 64px}
+.section-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(32px,4vw,48px);font-weight:700;color:var(--ink);margin-bottom:16px;line-height:1.15}
+.section-sub{font-size:17px;color:var(--ink-muted);line-height:1.7;font-weight:300}
+
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.feature-card{background:var(--card);border-radius:16px;padding:32px;border:1px solid rgba(15,14,23,.06);transition:all .3s;cursor:default}
+.feature-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:rgba(201,168,76,.3)}
+.feature-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:20px}
+.feature-icon.blue{background:var(--blue-soft)}
+.feature-icon.gold{background:#fef9ec}
+.feature-icon.green{background:#f0fdf4}
+.feature-icon.rose{background:#fff1f2}
+.feature-icon.purple{background:#f5f3ff}
+.feature-icon.teal{background:#f0fdfa}
+.feature-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:10px;color:var(--ink)}
+.feature-desc{font-size:14px;color:var(--ink-muted);line-height:1.7}
+
+.subjects-section{padding:80px 5%;background:var(--ink);color:#fff}
+.subjects-header{text-align:center;margin-bottom:48px}
+.subjects-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:block}
+.subjects-title{font-family:'Playfair Display',serif;font-size:clamp(28px,3.5vw,42px);font-weight:700;color:#fff}
+.subjects-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.subject-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:24px;text-align:center;transition:all .3s;cursor:default}
+.subject-card:hover{background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.4);transform:translateY(-3px)}
+.subject-icon{font-size:32px;margin-bottom:12px}
+.subject-name{font-size:15px;font-weight:600;color:#fff;margin-bottom:6px}
+.subject-topics{font-size:12px;color:rgba(255,255,255,.5)}
+
+.how-it-works{padding:100px 5%}
+.steps-wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+.steps-wrap::before{content:'';position:absolute;top:36px;left:10%;right:10%;height:2px;background:linear-gradient(to right,var(--blue),var(--gold));z-index:0}
+.step{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 16px;position:relative;z-index:1}
+.step-num{width:72px;height:72px;border-radius:50%;background:var(--card);border:3px solid var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--blue);margin-bottom:20px;box-shadow:0 0 0 8px var(--cream)}
+.step:nth-child(2) .step-num{border-color:var(--gold);color:var(--gold)}
+.step:nth-child(3) .step-num{border-color:var(--green);color:var(--green)}
+.step:nth-child(4) .step-num{border-color:var(--rose);color:var(--rose)}
+.step-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin-bottom:8px;color:var(--ink)}
+.step-desc{font-size:13px;color:var(--ink-muted);line-height:1.6}
+
+.testimonials{padding:80px 5%;background:var(--paper)}
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.testimonial-card{background:var(--card);border-radius:16px;padding:28px;border:1px solid rgba(15,14,23,.06)}
+.testimonial-stars{color:var(--gold);font-size:14px;margin-bottom:14px;letter-spacing:2px}
+.testimonial-text{font-size:15px;color:var(--ink-soft);line-height:1.7;margin-bottom:20px;font-style:italic}
+.testimonial-author{display:flex;align-items:center;gap:12px}
+.author-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--gold));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px}
+.author-name{font-size:14px;font-weight:600;color:var(--ink)}
+.author-grade{font-size:12px;color:var(--ink-muted)}
+
+.cta-section{padding:100px 5%;text-align:center;background:linear-gradient(135deg,var(--ink) 0%,#1a1a3e 100%);position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(201,168,76,.15) 0%,transparent 70%);pointer-events:none}
+.cta-title{font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,58px);font-weight:900;color:#fff;margin-bottom:16px;line-height:1.1;position:relative}
+.cta-title span{color:var(--gold-light);font-style:italic}
+.cta-sub{font-size:18px;color:rgba(255,255,255,.65);margin-bottom:40px;font-weight:300;position:relative}
+.cta-actions{display:flex;justify-content:center;gap:16px;position:relative}
+
+footer{background:var(--ink);padding:60px 5% 32px;color:rgba(255,255,255,.6)}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
+.footer-brand p{font-size:14px;line-height:1.7;margin-top:12px;color:rgba(255,255,255,.5)}
+.footer-col h4{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.9);margin-bottom:16px}
+.footer-col a{display:block;font-size:14px;color:rgba(255,255,255,.5);text-decoration:none;margin-bottom:10px;transition:color .2s}
+.footer-col a:hover{color:var(--gold)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:24px;display:flex;justify-content:space-between;align-items:center}
+.footer-bottom p{font-size:13px}
+
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.hero-content>*{animation:fadeInUp .7s ease both}
+.hero-content>*:nth-child(1){animation-delay:.1s}
+.hero-content>*:nth-child(2){animation-delay:.2s}
+.hero-content>*:nth-child(3){animation-delay:.3s}
+.hero-content>*:nth-child(4){animation-delay:.4s}
+.hero-content>*:nth-child(5){animation-delay:.5s}
+.hero-visual{animation:fadeInUp .7s ease .3s both}
+.chat-preview{animation:float 4s ease-in-out infinite}
+.float-tag{animation:float 4s ease-in-out .5s infinite}
+
+@media(max-width:900px){
+.hero{grid-template-columns:1fr;gap:40px}
+.features-grid{grid-template-columns:1fr 1fr}
+.subjects-grid{grid-template-columns:1fr 1fr}
+.steps-wrap{grid-template-columns:1fr 1fr;gap:32px}
+.steps-wrap::before{display:none}
+.testimonials-grid{grid-template-columns:1fr}
+.footer-grid{grid-template-columns:1fr 1fr}
+.nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">🎓</div>
+    <div class="nav-logo-text">Edu<span>Bot</span></div>
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#subjects">Subjects</a>
+    <a href="#how-it-works">How it Works</a>
+    <a href="#testimonials">Reviews</a>
+  </div>
+  <div class="nav-cta">
+    <a href="/login" class="btn btn-ghost">Sign In</a>
+    <a href="/register" class="btn btn-primary">Get Started Free</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">AI-Powered Learning Assistant</div>
+    <h1 class="hero-title">Your Personal<br><span class="accent">Study Guide</span><br>Awaits.</h1>
+    <p class="hero-sub">Ask doubts anytime. Get instant, clear answers across Maths, Physics, Chemistry, Biology, History, and Computer Science — powered by a trained AI teacher.</p>
+    <div class="hero-actions">
+      <a href="/register" class="btn btn-gold btn-lg">🚀 Start Learning Free</a>
+      <a href="/login" class="btn btn-ghost btn-lg">Sign In →</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">50+</span><span class="stat-label">Topics Covered</span></div>
+      <div class="stat"><span class="stat-num">5</span><span class="stat-label">Core Subjects</span></div>
+      <div class="stat"><span class="stat-num">24/7</span><span class="stat-label">Always Available</span></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-img-wrap">
+      <img src="https://images.pexels.com/photos/5212345/pexels-photo-5212345.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Students learning" onerror="this.src='https://images.pexels.com/photos/301920/pexels-photo-301920.jpeg?auto=compress&cs=tinysrgb&w=800'">
+      <div class="overlay"></div>
+    </div>
+    <div class="chat-preview">
+      <div class="chat-preview-header">
+        <div class="bot-avatar">E</div>
+        <div>
+          <div class="chat-preview-name">EduBot</div>
+          <div class="chat-preview-status">Online & Ready</div>
+        </div>
+      </div>
+      <div class="chat-bubble">Pythagoras Theorem: c² = a² + b², where c is the hypotenuse. E.g., 3² + 4² = 5² ✓</div>
+    </div>
+    <div class="float-tag">
+      <span class="emoji">📚</span>
+      <span>Text & Voice Support</span>
+    </div>
+  </div>
+</section>
+
+<section class="section section-dark" id="features">
+  <div class="section-header">
+    <div class="section-tag">Why EduBot</div>
+    <h2 class="section-title">Everything a Student Needs</h2>
+    <p class="section-sub">From instant doubt-clearing to voice interaction and video avatars — EduBot is built for serious learners.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon blue">🤖</div>
+      <div class="feature-title">AI-Trained Model</div>
+      <p class="feature-desc">Powered by a custom-trained neural network on curriculum-aligned intents for accurate, subject-specific answers.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon gold">🎙️</div>
+      <div class="feature-title">Voice Input & Output</div>
+      <p class="feature-desc">Speak your question and hear the answer — full voice interaction using Web Speech API for hands-free studying.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon green">🎬</div>
+      <div class="feature-title">Video Avatar Teacher</div>
+      <p class="feature-desc">A teacher avatar plays while EduBot responds — looping video synced to voice length for an immersive experience.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon rose">📋</div>
+      <div class="feature-title">Chat History</div>
+      <p class="feature-desc">All your conversations are saved securely. Revisit previous answers anytime across sessions.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon purple">📄</div>
+      <div class="feature-title">Export as PDF</div>
+      <p class="feature-desc">Download your entire chat history as a beautifully formatted PDF for offline revision and notes.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon teal">🔐</div>
+      <div class="feature-title">Secure Student Profiles</div>
+      <p class="feature-desc">Personal login with grade and school info. Your data is private, encrypted, and yours alone.</p>
+    </div>
+  </div>
+</section>
+
+<section class="subjects-section" id="subjects">
+  <div class="subjects-header">
+    <span class="subjects-tag">Curriculum Coverage</span>
+    <h2 class="subjects-title">Subjects We Cover</h2>
+  </div>
+  <div class="subjects-grid">
+    <div class="subject-card">
+      <div class="subject-icon">📐</div>
+      <div class="subject-name">Mathematics</div>
+      <div class="subject-topics">Algebra · Geometry · Calculus · Statistics</div>
+    </div>
+    <div class="subject-card">
+      <div class="subject-icon">⚡</div>
+      <div class="subject-name">Physics</div>
+      <div class="subject-topics">Motion · Forces · Optics · Thermodynamics</div>
+    </div>
+    <div class="subject-card">
+      <div class="subject-icon">🧪</div>
+      <div class="subject-name">Chemistry</div>
+      <div class="subject-topics">Periodic Table · Reactions · Bonding · Acids</div>
+    </div>
+    <div class="subject-card">
+      <div class="subject-icon">🧬</div>
+      <div class="subject-name">Biology</div>
+      <div class="subject-topics">Cells · Genetics · Ecology · Human Body</div>
+    </div>
+    <div class="subject-card">
+      <div class="subject-icon">🏛️</div>
+      <div class="subject-name">History</div>
+      <div class="subject-topics">Ancient · Medieval · Modern · World Wars</div>
+    </div>
+    <div class="subject-card">
+      <div class="subject-icon">🌍</div>
+      <div class="subject-name">Geography</div>
+      <div class="subject-topics">Maps · Climate · Resources · India</div>
+    </div>
+    <div class="subject-card">
+      <div class="subject-icon">💻</div>
+      <div class="subject-name">Computer Science</div>
+      <div class="subject-topics">Programming · OS · Networks · AI · Binary</div>
+    </div>
+    <div class="subject-card">
+      <div class="subject-icon">📖</div>
+      <div class="subject-name">Study Skills</div>
+      <div class="subject-topics">Time Mgmt · Memory · Exam Prep · Focus</div>
+    </div>
+  </div>
+</section>
+
+<section class="how-it-works section" id="how-it-works">
+  <div class="section-header">
+    <div class="section-tag">Getting Started</div>
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-sub">Up and running in under 60 seconds.</p>
+  </div>
+  <div class="steps-wrap">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-title">Create Account</div>
+      <p class="step-desc">Register with your name, grade, and school. Free forever, no credit card needed.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-title">Open EduBot Chat</div>
+      <p class="step-desc">Land on your personalized chat dashboard with your AI teacher ready.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-title">Ask Your Doubt</div>
+      <p class="step-desc">Type or speak your question. Watch the teacher avatar respond live.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-title">Learn & Export</div>
+      <p class="step-desc">Review history, continue sessions, and export chats as PDF for revision.</p>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials section-dark section" id="testimonials">
+  <div class="section-header">
+    <div class="section-tag">Student Reviews</div>
+    <h2 class="section-title">Loved by Students</h2>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"EduBot explained the quadratic formula better than my tutor! I could ask as many times as I needed without feeling embarrassed."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">A</div>
+        <div><div class="author-name">Arjun Sharma</div><div class="author-grade">Grade 10, Delhi</div></div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"The voice feature is amazing. I study while cooking now — just ask my question out loud and get the answer spoken back!"</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">P</div>
+        <div><div class="author-name">Priya Nair</div><div class="author-grade">Grade 11, Chennai</div></div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"I exported my entire Chemistry revision chat as PDF the night before boards. It was the perfect last-minute notes!"</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">R</div>
+        <div><div class="author-name">Rahul Mehta</div><div class="author-grade">Grade 12, Mumbai</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <h2 class="cta-title">Ready to <span>Ace Your Exams?</span></h2>
+  <p class="cta-sub">Join thousands of students already learning smarter with EduBot.</p>
+  <div class="cta-actions">
+    <a href="/register" class="btn btn-gold btn-lg">✨ Create Free Account</a>
+    <a href="/login" class="btn btn-ghost btn-lg" style="color:#fff;border-color:rgba(255,255,255,.3)">Sign In →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="nav-logo">
+        <div class="nav-logo-icon">🎓</div>
+        <div class="nav-logo-text" style="color:#fff">Edu<span>Bot</span></div>
+      </div>
+      <p>Your AI-powered study companion. Available 24/7 to help you clear doubts, revise concepts, and ace every exam.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="#features">Features</a>
+      <a href="#subjects">Subjects</a>
+      <a href="#how-it-works">How it Works</a>
+    </div>
+    <div class="footer-col">
+      <h4>Subjects</h4>
+      <a href="/chat">Mathematics</a>
+      <a href="/chat">Physics</a>
+      <a href="/chat">Chemistry</a>
+      <a href="/chat">Biology</a>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <a href="/register">Register</a>
+      <a href="/login">Login</a>
+      <a href="/chat">Chat</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 EduBot. Built for students, by learners.</p>
+    <p>Made with ❤️ for education</p>
+  </div>
+</footer>
+
+</body>
+</html>

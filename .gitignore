@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+*.pkl
+
+# Virtual env
+venv/
+
+# Database
+*.db
+
+# Model files (optional)
+chatbot_model.h5
+
+# Generated files
+hologram/
