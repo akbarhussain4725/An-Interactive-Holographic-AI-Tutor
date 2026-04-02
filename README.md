@@ -1,50 +1,48 @@
-# An-Interactive-Holographic-AI-Tutor
-EduBot is an Interactive Holographic AI Tutor enhances learning through immersive, real-time interaction. It uses speech recognition, AI, NLP, and TTS to process voice queries and deliver responses via a 3D animated avatar projected through a low-cost holographic setup, enabling engaging, personalized education.
-It is built using Flask, NLP, and Deep Learning. It allows students to ask questions via text or voice and receive intelligent responses with audio and avatar-based video output.
+# 🎓 EduBot - AI Tutor with Avatar Video Response
+
+## 📌 Project Description
+EduBot is an AI-powered interactive tutor that:
+- Answers questions based on trained subjects
+- Has basic knowledge of multiple domains (Maths, Science, History, etc.)
+- Generates voice + AI avatar video response
+- Automatically downloads video for use in Hologram apps
 
 ---
 
 ## 🚀 Features
-
 - 🔐 User Authentication (Login/Register)
-- 💬 AI Chatbot using NLP
-- 🎤 Voice Input & Speech Output (TTS)
-- 🎥 AI Avatar Video Response
+- 💬 Chat Interface with AI
+- 🧠 NLP Model (Intent-based)
+- 🔊 Text-to-Speech (gTTS)
+- 🎥 AI Avatar Video Generation
 - 📄 Export Chat as PDF
-- 🧠 Deep Learning Model (TensorFlow/Keras)
-- 📚 Multi-subject support (Maths, Science, etc.)
+- 📥 Auto-download response video
 
 ---
 
-## 🏗️ Tech Stack
-
-- **Frontend:** HTML, CSS, JavaScript
-- **Backend:** Flask (Python)
-- **Database:** SQLite
-- **AI Model:** TensorFlow / Keras
-- **NLP:** NLTK
-- **Voice:** gTTS
-- **Video:** MoviePy
-- **PDF Export:** ReportLab
+## 🧠 How It Works
+1. User asks question
+2. NLP model predicts intent
+3. Response is generated
+4. Audio is created using gTTS
+5. Video is generated using avatar + audio
+6. Video is auto-downloaded
 
 ---
 
-## 📂 Project Structure
+## ⚙️ Tech Stack
+- Python (Flask)
+- TensorFlow / Keras
+- NLTK
+- MoviePy
+- SQLite
+- HTML, CSS, JS
 
-AI-Tutor/
-│
-├── static/
-├── templates/
-│ ├── auth.html
-│ ├── chat.html
-│ └── landing.html
-│
-├── hologram/
-├── app.py
-├── train.py
-├── intents.json
-├── chatbot_model.h5
-├── words.pkl
-├── classes.pkl
-├── requirements.txt
-└── README.md
+---
+
+## ▶️ Installation
+
+```bash
+git clone https://github.com/your-username/ai-tutor.git
+cd ai-tutor
+pip install -r requirements.txt
